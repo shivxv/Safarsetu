@@ -1,10 +1,10 @@
 const env = import.meta.env
 
 export const appConfig = {
-  apiBaseUrl: env.VITE_API_BASE_URL || 'http://localhost:5000/api',
+  apiBaseUrl: env.VITE_API_BASE_URL || (env.DEV ? 'http://localhost:5000/api' : '/api'),
   mapsProvider: env.VITE_MAPS_PROVIDER || 'google',
   mapsApiKey: env.VITE_MAPS_API_KEY || '',
-  socketUrl: env.VITE_SOCKET_URL || 'http://localhost:5000',
+  socketUrl: env.VITE_SOCKET_URL || (env.DEV ? 'http://localhost:5000' : window.location.origin),
   demoMode: env.VITE_DEMO_MODE !== 'false',
 }
 

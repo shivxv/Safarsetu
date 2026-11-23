@@ -30,6 +30,21 @@ integrations are implemented. Provider-dependent endpoints return explicit
 unavailable responses until configured.
 The backend `.env` file is local-only; never commit populated credentials.
 
+## Public phone-test deployment
+
+The `render.yaml` Blueprint deploys one Render web service that builds the Vite
+frontend and serves it from Express alongside the `/api` routes. This is a demo
+deployment: OTP, booking, payments, and other unfinished integrations remain
+disabled. The Blueprint generates a server-side JWT secret and leaves MongoDB
+unconfigured until an Atlas URI is added privately in Render's environment settings.
+
+1. Sign in to Render with the GitHub account that can access this repository.
+2. Choose **New → Blueprint**, select `shivxv/Safarsetu`, and deploy the `main` branch.
+3. Open the Render URL on your phone. The API health check is at `/api/health`.
+
+The free web service may sleep when idle and take longer to respond on its first
+request. Do not set `VITE_DEMO_MODE=false` for this preview.
+
 Quality checks:
 
 ```powershell

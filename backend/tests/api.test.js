@@ -47,3 +47,21 @@ test('OTP endpoint clearly reports missing provider configuration', async (conte
   assert.equal(response.status, 503)
   assert.equal(body.code, 'OTP_PROVIDER_NOT_CONFIGURED')
 })
+
+test('CORS accepts the same origin and rejects an unlisted origin', async (context) => {
+  const server = app.listen(0)
+  context.after(() => new Promise((resolve) => server.close(resolve)))
+  await new Promise((resolve) => server.once('listening', resolve))
+  const address = server.address()
+  const url = `http://127.0.0.1:${address.port}/api/health`
+  const sameOrigin = `http://127.0.0.1:${address.port}`
+
+  const allowedResponse = await fetch(url, { headers: { Origin: sameOrigin } })
+  assert.equal(allowedResponse.status, 200)
+  assert.equal(allowedResponse.headers.get('access-control-allow-origin'), sameOrigin)
+
+  const blockedResponse = await fetch(url, { headers: { Origin: 'https://untrusted.example' } })
+  const body = await blockedResponse.json()
+  assert.equal(blockedResponse.status, 403)
+  assert.equal(body.code, 'ORIGIN_NOT_ALLOWED')
+})
