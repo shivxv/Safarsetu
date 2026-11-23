@@ -24,9 +24,10 @@ npm run dev:api
 ```
 
 The API listens on `http://localhost:5000`; check `http://localhost:5000/api/health`.
-MongoDB is optional for starting the scaffold, but health reports that the API is not
-ready for bookings until the database is connected. Provider-dependent endpoints
-return explicit unavailable responses until their integrations are implemented.
+MongoDB is optional for starting the scaffold; health reports database connectivity
+separately, and bookings remain unavailable until their business logic and required
+integrations are implemented. Provider-dependent endpoints return explicit
+unavailable responses until configured.
 The backend `.env` file is local-only; never commit populated credentials.
 
 Quality checks:

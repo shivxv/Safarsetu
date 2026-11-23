@@ -13,6 +13,7 @@ test('health endpoint reports API state without exposing connection details', as
   assert.equal(response.status, 200)
   assert.equal(body.service, 'safarsetu-api')
   assert.equal(body.status, 'ok')
+  assert.equal(body.readyForBookings, false)
   assert.equal('error' in body, false)
 })
 

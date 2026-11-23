@@ -10,7 +10,7 @@ router.get('/', (request, response) => {
     status: 'ok',
     service: 'safarsetu-api',
     database: connected ? 'connected' : databaseStatus.state,
-    readyForBookings: connected,
+    readyForBookings: false,
     timestamp: new Date().toISOString(),
   })
 })
