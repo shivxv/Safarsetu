@@ -8,8 +8,9 @@ maps, payments, and other provider-dependent features remain under development.
 ## Run locally
 
 ```powershell
-npm install
-Copy-Item .env.development.example .env.local
+npm --prefix frontend ci
+npm --prefix backend ci
+Copy-Item frontend\.env.development.example frontend\.env.local
 npm run dev
 ```
 
@@ -19,7 +20,6 @@ In a second terminal:
 
 ```powershell
 Copy-Item backend\.env.example backend\.env
-npm --prefix backend install
 npm run dev:api
 ```
 
@@ -49,7 +49,6 @@ Quality checks:
 
 ```powershell
 npm test
-npm --prefix backend test
 npm run lint
 npm run build
 ```
@@ -65,11 +64,14 @@ Vite client variables are public and are included in the browser bundle. Never p
 - `VITE_MAPS_API_KEY`: optional browser maps key; if used, restrict it by site and permitted APIs. No map SDK is activated without an implementation and valid restricted key.
 - `VITE_PAYMENT_PUBLIC_KEY`: gateway public identifier only. Gateway secrets stay on the backend.
 
-Use `.env.development.example` for local work and `.env.production.example` as a deployment template. Copy the appropriate template to a local, ignored env file and supply actual URLs. Do not commit populated secrets or environment files.
+Use `frontend/.env.development.example` for local work and
+`frontend/.env.production.example` as a deployment template. Copy the appropriate
+template to an ignored local env file. Do not commit populated secrets or
+environment files.
 
 ## Integration boundary
 
-The client expects an authenticated backend to own authorization, validation, rate limiting, service coverage, fare/rule configuration, matching, cancellations, payment verification/refunds, rewards, notifications, and audit records. Relevant request wrappers are under `src/services/`.
+The client expects an authenticated backend to own authorization, validation, rate limiting, service coverage, fare/rule configuration, matching, cancellations, payment verification/refunds, rewards, notifications, and audit records. Relevant request wrappers are under `frontend/src/services/`.
 
 The API response shapes used by the current UI are intentionally explicit in its service calls: public booking configuration (`activeVehicleTypes`, `serviceZones`, `fareRules`, `paymentMethods`), location suggestions/coverage/routes, fare quote options, booking status and rider details, session/profile, payment status, and reward progress. Align the backend contract and validate every field server-side before enabling live mode.
 

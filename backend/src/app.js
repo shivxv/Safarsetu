@@ -18,8 +18,8 @@ import supportRoutes from './routes/support.js'
 import { ApiError } from './utils/apiError.js'
 
 const app = express()
-const clientBuildDirectory = fileURLToPath(new URL('../../dist/', import.meta.url))
-const clientIndexPath = fileURLToPath(new URL('../../dist/index.html', import.meta.url))
+const clientBuildDirectory = fileURLToPath(new URL('../../frontend/dist/', import.meta.url))
+const clientIndexPath = fileURLToPath(new URL('../../frontend/dist/index.html', import.meta.url))
 
 app.disable('x-powered-by')
 app.set('trust proxy', 1)
