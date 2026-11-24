@@ -12,8 +12,12 @@ const schema = z.object({
   ACTIVE_VEHICLE_TYPES: z.string().default('bike,auto'),
   SERVICE_ZONES: z.string().default('Alpha 1,Alpha 2,Beta 1,Beta 2,Knowledge Park,Pari Chowk'),
   MAPS_PROVIDER: z.string().optional().default(''),
-  OTP_DELIVERY_URL: z.string().url().optional().or(z.literal('')).default(''),
-  OTP_PROVIDER_TOKEN: z.string().optional().default(''),
+  MSG91_AUTH_KEY: z.string().optional().default(''),
+  MSG91_TEMPLATE_ID: z.string().optional().default(''),
+  MSG91_DEFAULT_COUNTRY_CODE: z.string().regex(/^[1-9]\d{0,2}$/).default('91'),
+  MSG91_OTP_LENGTH: z.coerce.number().int().min(4).max(9).default(6),
+  MSG91_OTP_EXPIRY_MINUTES: z.coerce.number().int().min(1).max(10080).default(5),
+  MSG91_REQUEST_TIMEOUT_MS: z.coerce.number().int().min(1000).max(30000).default(10000),
 })
 
 const parsed = schema.safeParse(process.env)

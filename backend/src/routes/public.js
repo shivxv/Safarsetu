@@ -19,7 +19,7 @@ router.get('/booking-configuration', (request, response) => {
     cancellationPolicy: null,
     integrations: {
       maps: Boolean(env.MAPS_PROVIDER),
-      otp: Boolean(env.OTP_DELIVERY_URL && env.OTP_PROVIDER_TOKEN),
+      otp: Boolean(env.MSG91_AUTH_KEY && env.MSG91_TEMPLATE_ID),
       database: Boolean(env.MONGODB_URI),
     },
   })

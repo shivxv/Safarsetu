@@ -3,8 +3,16 @@ import { rateLimit } from 'express-rate-limit'
 import { env } from '../config/env.js'
 import { authenticate } from '../middleware/authenticate.js'
 import { ApiError, notConfigured } from '../utils/apiError.js'
+import { createMsg91OtpClient, normalizeMobileNumber } from '../services/msg91Otp.js'
 
 const router = Router()
+const msg91Otp = createMsg91OtpClient({
+  authKey: env.MSG91_AUTH_KEY,
+  templateId: env.MSG91_TEMPLATE_ID,
+  otpLength: env.MSG91_OTP_LENGTH,
+  otpExpiryMinutes: env.MSG91_OTP_EXPIRY_MINUTES,
+  timeoutMs: env.MSG91_REQUEST_TIMEOUT_MS,
+})
 const otpLimiter = rateLimit({
   windowMs: 15 * 60 * 1000,
   limit: 5,
@@ -13,25 +21,34 @@ const otpLimiter = rateLimit({
   message: { message: 'Too many verification attempts. Please wait and try again.', code: 'RATE_LIMITED' },
 })
 
-router.post('/otp/send', otpLimiter, (request, response, next) => {
-  const mobileNumber = request.body?.mobileNumber
-  if (typeof mobileNumber !== 'string' || !/^\+?[1-9]\d{7,14}$/.test(mobileNumber.replace(/[\s()-]/g, ''))) {
-    next(new ApiError(400, 'INVALID_MOBILE_NUMBER', 'Enter a valid mobile number.'))
-    return
+router.post('/otp/send', otpLimiter, async (request, response, next) => {
+  try {
+    const mobileNumber = normalizeMobileNumber(request.body?.mobileNumber, env.MSG91_DEFAULT_COUNTRY_CODE)
+    if (!mobileNumber) {
+      throw new ApiError(400, 'INVALID_MOBILE_NUMBER', 'Enter a valid mobile number with country code.')
+    }
+    await msg91Otp.send(mobileNumber)
+    response.json({ sent: true })
+  } catch (error) {
+    next(error)
   }
-  if (!env.OTP_DELIVERY_URL || !env.OTP_PROVIDER_TOKEN) {
-    next(new ApiError(503, 'OTP_PROVIDER_NOT_CONFIGURED', 'OTP delivery is not configured on this server yet.'))
-    return
-  }
-  next(new ApiError(503, 'OTP_ADAPTER_REQUIRED', 'The configured OTP provider requires a provider-specific adapter before sending messages.'))
 })
 
-router.post('/otp/verify', otpLimiter, (request, response, next) => {
-  if (!env.OTP_DELIVERY_URL || !env.OTP_PROVIDER_TOKEN) {
-    next(new ApiError(503, 'OTP_PROVIDER_NOT_CONFIGURED', 'OTP verification is not configured on this server yet.'))
-    return
+router.post('/otp/verify', otpLimiter, async (request, response, next) => {
+  try {
+    const mobileNumber = normalizeMobileNumber(request.body?.mobileNumber, env.MSG91_DEFAULT_COUNTRY_CODE)
+    const otp = request.body?.otp
+    if (!mobileNumber) {
+      throw new ApiError(400, 'INVALID_MOBILE_NUMBER', 'Enter a valid mobile number with country code.')
+    }
+    if (typeof otp !== 'string' || !new RegExp(`^\\d{${env.MSG91_OTP_LENGTH}}$`).test(otp)) {
+      throw new ApiError(400, 'INVALID_OTP', 'Enter the verification code received on your mobile.')
+    }
+    await msg91Otp.verify(mobileNumber, otp)
+    response.json({ verified: true })
+  } catch (error) {
+    next(error)
   }
-  next(new ApiError(503, 'OTP_ADAPTER_REQUIRED', 'The configured OTP provider requires a provider-specific adapter before verifying codes.'))
 })
 
 router.post('/register', otpLimiter, (request, response, next) => {

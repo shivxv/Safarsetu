@@ -1,8 +1,9 @@
 # SafarSetu
 
 Responsive React + Vite customer ride-booking website with an Express API scaffold
-for SafarSetu Bike and Auto rides in Greater Noida. Authentication, booking,
-maps, payments, and other provider-dependent features remain under development.
+for SafarSetu Bike and Auto rides in Greater Noida. MSG91 OTP delivery and verification
+can be configured, but customer registration, login sessions, booking, maps, payments,
+and other provider-dependent features remain under development.
 
 
 ## Run locally
@@ -26,8 +27,8 @@ npm run dev:api
 The API listens on `http://localhost:5000`; check `http://localhost:5000/api/health`.
 MongoDB is optional for starting the scaffold; health reports database connectivity
 separately, and bookings remain unavailable until their business logic and required
-integrations are implemented. Provider-dependent endpoints return explicit
-unavailable responses until configured.
+integrations are implemented. MSG91 OTP delivery is available only after its
+server-side credentials and approved template are configured.
 The backend `.env` file is local-only; never commit populated credentials.
 
 ## Public phone-test deployment
@@ -35,7 +36,7 @@ The backend `.env` file is local-only; never commit populated credentials.
 The `render.yaml` Blueprint deploys one Render web service that builds the Vite
 frontend and serves it from Express alongside the `/api` routes. This is a demo
 deployment: OTP, booking, payments, and other unfinished integrations remain
-disabled. The Blueprint generates a server-side JWT secret and leaves MongoDB
+unconfigured by default. The Blueprint generates a server-side JWT secret and leaves MongoDB
 unconfigured until an Atlas URI is added privately in Render's environment settings.
 
 1. Sign in to Render with the GitHub account that can access this repository.
@@ -72,6 +73,8 @@ environment files.
 ## Integration boundary
 
 The client expects an authenticated backend to own authorization, validation, rate limiting, service coverage, fare/rule configuration, matching, cancellations, payment verification/refunds, rewards, notifications, and audit records. Relevant request wrappers are under `frontend/src/services/`.
+
+Configure `MSG91_AUTH_KEY`, `MSG91_TEMPLATE_ID`, and optional OTP length/expiry settings in the backend environment to enable MSG91 OTP sending and verification. A 10-digit local number is interpreted using `MSG91_DEFAULT_COUNTRY_CODE` (defaults to India, `91`). Create and approve the OTP template in MSG91 first; for India, MSG91 requires the applicable DLT-registered template and sender details. See the [MSG91 SendOTP API](https://docs.msg91.com/otp/sendotp), [Verify OTP API](https://docs.msg91.com/otp/verify-otp), and [template setup guide](https://msg91.com/help/template/how-to-create-flow-id-to-send-sms-via-api). Never expose the auth key in frontend variables. OTP verification alone does not create an account or a login session: Atlas-backed customer registration, session issuance, and recovery remain unimplemented, so keep demo mode enabled.
 
 The API response shapes used by the current UI are intentionally explicit in its service calls: public booking configuration (`activeVehicleTypes`, `serviceZones`, `fareRules`, `paymentMethods`), location suggestions/coverage/routes, fare quote options, booking status and rider details, session/profile, payment status, and reward progress. Align the backend contract and validate every field server-side before enabling live mode.
 

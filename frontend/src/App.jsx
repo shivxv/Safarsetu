@@ -312,7 +312,7 @@ function AuthPage({ mode }) {
     setLoading(true)
     try {
       if (mode === 'register') await authService.register({ fullName, mobileNumber, otp, privacyConsent })
-      else await authService.verifyOtp({ mobileNumber, otp })
+      else await authService.login({ mobileNumber, otp })
       navigate('/dashboard')
     } catch (requestError) {
       setError(requestError.message || 'Verification failed. Please try again.')
