@@ -1074,7 +1074,7 @@ function AppLayout() {
         <Route path="/saved-addresses" element={<ProtectedRoute><SavedAddressesPage /></ProtectedRoute>} />
         <Route path="/support" element={<SupportPage />} />
         <Route path="/about" element={<GenericPage title="About SafarSetu" eyebrow="Our purpose"><p>SafarSetu aims to provide affordable, trustworthy and transparent Bike and Auto rides for everyday journeys in Greater Noida.</p></GenericPage>} />
-        <Route path="/contact" element={<GenericPage title="Contact" eyebrow="Get in touch"><p>Official contact details are pending. This demo intentionally does not display invented phone numbers or email addresses.</p></GenericPage>} />
+        <Route path="/contact" element={<GenericPage title="Contact" eyebrow="Get in touch"><div className="space-y-4"><p>Contact SafarSetu for assistance with your ride questions.</p><p><a href="tel:+917820092916" className="font-semibold text-emerald-700 hover:underline">+91 7820092916</a></p><p><a href="mailto:safarsetuuu@gmail.com" className="font-semibold text-emerald-700 hover:underline">safarsetuuu@gmail.com</a></p></div></GenericPage>} />
         <Route path="/terms" element={<GenericPage title="Terms" eyebrow="Legal"><p>Website terms are a placeholder until final business terms are approved.</p></GenericPage>} />
         <Route path="/privacy" element={<GenericPage title="Privacy policy" eyebrow="Legal"><p>Privacy practices and data retention details are a placeholder until the production policy is approved.</p></GenericPage>} />
         <Route path="*" element={<Navigate to="/" replace />} />
